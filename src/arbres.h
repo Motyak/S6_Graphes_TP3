@@ -6,6 +6,7 @@
 /***********************************************************************/
 
 const int N = 500; // Constante permettant de surdimensionner les données
+const int infini = 1e+5;
 
 class graphe{
 	int type; // Type du graphe lues données. 

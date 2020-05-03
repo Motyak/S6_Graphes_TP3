@@ -1,0 +1,33 @@
+C représente l'ensemble des sommets que l'on couvre.
+Donc je suppose que C fait la taille de n et on ajoute au fur et à mesure
+    des sommets (jusqu'a tous les mettre ?)
+
+
+v0 représente le premier sommet (sommet à l'id le plus petit).
+
+
+Si c'est un graphe simple on remplit E, sinon on remplit coord.
+Puis le A on le remplit dans la méthode arbrecouvrant.
+
+A vide est retranscrit via le fait que les valeurs de A dans notre code soit init
+à false.
+
+
+
+e est une arete/arc, ses extrémités sont notées e = (oe,de).
+
+
+
+
+e* est l'arete de plus petit poids dans omega(c)
+e* = Argminc(e) veut dire que e* est (e appartenant à omega(C)).
+
+omega(c) représente l'ensemble des aretes parmi les sommets couverts (C).
+(uniquement aretes positives c'est à dire 0->1 par ex mais jamais 1->0)
+
+
+
+test permettant de savoir quelle extrémités on rajoute et que devient omega(C)
+
+oe* c'est l'extrémité debut de l'arete e*
+et de* l'extrémité fin

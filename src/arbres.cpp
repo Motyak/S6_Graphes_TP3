@@ -2,6 +2,9 @@
 #include <fstream>
 #include <utility>
 
+#include <vector>
+#include <algorithm>
+
 using namespace std;
 
 #include "arbres.h"
@@ -35,8 +38,7 @@ graphe::graphe(char* filename)
 			file >> this->coord[i].first;
 			file >> this->coord[i].second;
 		}
-	}
-		
+	}	
 	file.close();
 }
 
@@ -91,4 +93,51 @@ void graphe::resultats()
 void graphe::arbrecouvrant()
 {
 	   // !!! A FAIRE !!! //
+	vector<int> C { 0 };	//on ajoute a la liste de sommets couverts le premier sommet
+	vector<pair<int,int>> omega_C;
+	pair<int,int> e_etoile;
+	/* les valeurs de A sont déjà init à false, donc A vide */
+	int k = 0;
+
+	// C.push_back(0);	//on ajoute a la liste de sommets couverts le premier sommet
+	while(k != this->n - 1)	//autant faire une boucle for ??
+	{
+		// remplir omega_C et attribuer val a e etoile
+		int j = 0;
+		int poidsArete = infini;
+		for(int i = 0 ; i < this->n ; ++i)
+		{
+			for(j = i ; j < this->n ; ++j)
+			{
+				//arete = i,j
+
+				//si l'arete n'existe pas, on skip
+				if(this->E[i][j] == 0)
+					continue;
+				
+				//verifier si une des extremités est dans C et l'autre précisément pas
+				bool C_contains_i = find(C.begin(), C.end(), i) != C.end();
+				bool C_contains_j = find(C.begin(), C.end(), j) != C.end();
+				if(!C_contains_i != !C_contains_j)
+				{
+					omega_C.push_back(make_pair(i,j));
+					if(this->E[i][j] < poidsArete)
+					{
+						e_etoile = make_pair(i, j); //on met dans e etoile l'arete au poids le plus petit
+						poidsArete = this->E[i][j];
+					}
+				}	
+			}
+		}
+
+		this->A[e_etoile.first][e_etoile.second] = true;
+
+		//si l'extremite i n'est pas comprise dans C..
+		if(find(C.begin(), C.end(), e_etoile.first) == C.end())
+			C.push_back(e_etoile.first);
+		else
+			C.push_back(e_etoile.second);
+
+		++k;
+	}
 }
