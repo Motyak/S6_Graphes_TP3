@@ -80,28 +80,15 @@ void graphe::resultats()
     int S = 0;
     // !!! A FAIRE !!! //
 
-	if(this->type == 1)
+	for(int i = 0 ; i < this->n ; ++i)
 	{
-		for(int i = 0 ; i < this->n ; ++i)
+		for(int j = 0 ; j < this->n ; ++j)
 		{
-			for(int j = 0 ; j < this->n ; ++j)
+			if(this->A[i][j] == true)
 			{
-				if(this->A[i][j] == true)
-				{
-					cout<<i<<";"<<j<<endl;
-					S += this->E[i][j];
-				}
+				cout<<i<<";"<<j<<endl;
+				S += this->E[i][j];
 			}
-		}
-	}
-	else if(this->type == 2)
-	{
-		for(int i = 0 ; i < this->n ; ++i)
-		{
-			pair<int,int> p = this->coord[i];
-			cout<<p.first<<";"<<p.second<<endl;
-			S += round(sqrt((1 - p.first) * (1 - p.first) 
-					+ (p.second - 1) * (p.second - 1)));
 		}
 	}
 	
@@ -139,7 +126,7 @@ void graphe::arbrecouvrant()
 				pair<int,int> arete = make_pair(i, j);
 
 				//si l'arete n'existe pas, on skip
-				if(this->E[i][j] == 0 && find(begin(this->coord), begin(this->coord) + this->n, arete) == begin(this->coord) + this->n)
+				if(this->E[i][j] == 0)
 					continue;
 
 				//verifier si une des extremités est dans C et l'autre précisément pas
@@ -151,11 +138,7 @@ void graphe::arbrecouvrant()
 					if(find(omega_C.begin(), omega_C.end(), arete) == omega_C.end())
 						omega_C.push_back(arete);
 
-					int poidsArete;
-					if(this->type == 1)
-						poidsArete = this->E[i][j];
-					else if(this->type == 2)
-						poidsArete = round(sqrt((1 - i) * (1 - i) + (j - 1) * (j - 1)));
+					int poidsArete = this->E[i][j];
 					if(poidsArete < poidsPlusFaible)
 					{
 						e_etoile = arete; //on met dans e etoile l'arete au poids le plus petit
@@ -177,23 +160,14 @@ void graphe::arbrecouvrant()
 		omega_C.erase(find(omega_C.begin(), omega_C.end(), e_etoile));
 		
 		// Ajouter toutes les aretes partant du nouveau sommet dans C
-		if(this->type == 1)
-		{
-			for(int i = 0 ; i < this->n ; ++i)
-				if(this->E[C.back()][i] != 0)
-					omega_C.push_back(make_pair(C.back(), i));
-		}
-		else if(this->type == 2)
-		{
-			for(int i = 0 ; i < this->n ; ++i)
-				if(this->coord[i].first == C.back())
-					omega_C.push_back(this->coord[i]);
-		}
-
-
+		for(int i = 0 ; i < this->n ; ++i)
+			if(this->E[C.back()][i] != 0)
+				omega_C.push_back(make_pair(C.back(), i));
 
 		// retirer l'arete e etoile qui part du nouveau sommet dans C
 		omega_C.erase(find(omega_C.begin(), omega_C.end(), make_pair(e_etoile.second, e_etoile.first)));
+
+
 
 		// cout<<"\ndebug iteration "<<k<<endl;
 
