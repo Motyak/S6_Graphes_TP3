@@ -23,7 +23,6 @@ e* est l'arete de plus petit poids dans omega(c)
 e* = Argminc(e) veut dire que e* est (e appartenant à omega(C)).
 
 omega(c) représente l'ensemble des aretes parmi les sommets couverts (C).
-(uniquement aretes positives c'est à dire 0->1 par ex mais jamais 1->0)
 
 
 
@@ -31,3 +30,8 @@ test permettant de savoir quelle extrémités on rajoute et que devient omega(C)
 
 oe* c'est l'extrémité debut de l'arete e*
 et de* l'extrémité fin
+
+
+
+
+Empecher les doublons dans omega c, utiliser une structure de données qui empeche les doublons
