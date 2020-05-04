@@ -78,6 +78,19 @@ void graphe::resultats()
 {
     int S = 0;
     // !!! A FAIRE !!! //
+
+	for(int i = 0 ; i < this->n ; ++i)
+	{
+		for(int j = 0 ; j < this->n ; ++j)
+		{
+			if(this->A[i][j] == true)
+			{
+				cout<<i<<";"<<j<<endl;
+				S += this->E[i][j];
+			}
+		}
+	}
+
 	cout << "Coût(T) = " << S << endl; // Ce message doit être affiché
 }
 
@@ -151,27 +164,27 @@ void graphe::arbrecouvrant()
 		// retirer l'arete e etoile qui part du nouveau sommet dans C
 		omega_C.erase(find(omega_C.begin(), omega_C.end(), make_pair(e_etoile.second, e_etoile.first)));
 
-		cout<<"\ndebug iteration "<<k<<endl;
+		// cout<<"\ndebug iteration "<<k<<endl;
 
-		cout<<"C = "<<endl;
-		for(int i : C)
-			cout<<i<<endl;
+		// cout<<"C = "<<endl;
+		// for(int i : C)
+		// 	cout<<i<<endl;
 
-		cout<<endl;
-		cout<<"omega C ="<<endl;
-		for(pair<int,int> p : omega_C)
-			cout<<p.first<<";"<<p.second<<endl;
+		// cout<<endl;
+		// cout<<"omega C ="<<endl;
+		// for(pair<int,int> p : omega_C)
+		// 	cout<<p.first<<";"<<p.second<<endl;
 
-		cout<<"e etoile = "<<endl;
-		cout<<endl<<e_etoile.first<<";"<<e_etoile.second<<endl;
+		// cout<<"e etoile = "<<endl;
+		// cout<<endl<<e_etoile.first<<";"<<e_etoile.second<<endl;
 
-		cout<<"A="<<endl;
-		int v, w;
-		for( v = 0 ; v < this->n ; ++v)
-		{
-			for(w = 0 ; w < this->n - 1 ; ++w)
-				cout<<this->A[v][w]<<"\t";
-			cout<<this->A[v][w]<<endl;
-		}
+		// cout<<"A="<<endl;
+		// int v, w;
+		// for( v = 0 ; v < this->n ; ++v)
+		// {
+		// 	for(w = 0 ; w < this->n - 1 ; ++w)
+		// 		cout<<this->A[v][w]<<"\t";
+		// 	cout<<this->A[v][w]<<endl;
+		// }
 	}
 }
