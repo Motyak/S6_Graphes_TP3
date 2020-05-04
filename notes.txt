@@ -51,3 +51,10 @@ commence pas à 0. YEEES
 
 Donc comme la boucle d'itération i j ne peut pas fonctionner sur ce type de graphe,
 alors on va refaire une autre boucle pour traiter le type 2.
+
+Dans le fichier graphe euclidien on a les aretes, une arete i,j avec sommet i et j.
+
+
+
+Quand on traite un graphe euclidien, k n'itere pas pour chaque point mais bien chaque sommet, 
+du coup il faut récup cette infos.

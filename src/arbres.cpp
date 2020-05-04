@@ -108,7 +108,7 @@ void graphe::resultats()
 void graphe::arbrecouvrant()
 {
 	   // !!! A FAIRE !!! //
-	vector<int> C { 0 };	//on ajoute a la liste de sommets couverts le premier sommet
+	vector<int> C;	//on ajoute a la liste de sommets couverts le premier sommet
 	vector<pair<int,int>> omega_C;
 	pair<int,int> e_etoile;
 	/* les valeurs de A sont déjà init à false, donc A vide */
@@ -116,37 +116,70 @@ void graphe::arbrecouvrant()
 	for(int k = 1 ; k < this->n ; ++k)
 	{
 		// remplir omega_C et attribuer val a e etoile
-		int j = 0;
-		int poidsPlusFaible = infini;
-		for(int i = 0 ; i < this->n ; ++i)
+		if(this->type == 1)
 		{
-			for(j = i ; j < this->n ; ++j)
+			C.push_back(0);	//premier sommet
+			int j = 0;
+			int poidsPlusFaible = infini;
+			for(int i = 0 ; i < this->n ; ++i)
 			{
-				//arete = i,j
-				pair<int,int> arete = make_pair(i, j);
+				for(j = i ; j < this->n ; ++j)
+				{
+					//arete = i,j
+					pair<int,int> arete = make_pair(i, j);
 
-				//si l'arete n'existe pas, on skip
-				if(this->E[i][j] == 0)
-					continue;
+					//si l'arete n'existe pas, on skip
+					if(this->E[i][j] == 0)
+						continue;
 
+					//verifier si une des extremités est dans C et l'autre précisément pas
+					bool C_contains_i = find(C.begin(), C.end(), i) != C.end();
+					bool C_contains_j = find(C.begin(), C.end(), j) != C.end();
+					if(!C_contains_i != !C_contains_j)
+					{
+						//si ce n'est pas déjà dans l'ensemble
+						if(find(omega_C.begin(), omega_C.end(), arete) == omega_C.end())
+							omega_C.push_back(arete);
+
+						int poidsArete = this->E[i][j];
+						if(poidsArete < poidsPlusFaible)
+						{
+							e_etoile = arete; //on met dans e etoile l'arete au poids le plus petit
+							poidsPlusFaible = poidsArete;
+						}
+					}	
+				}
+			}
+		}
+		else if(type == 2)
+		{
+			C.push_back(1);	//premier sommet
+			int poidsPlusFaible = infini;
+
+			//je parcours toutes les aretes
+			for(int v = 0 ; v < this->n ; ++v)
+			{
 				//verifier si une des extremités est dans C et l'autre précisément pas
+				int i = this->coord[v].first;
+				int j = this->coord[v].second;
 				bool C_contains_i = find(C.begin(), C.end(), i) != C.end();
 				bool C_contains_j = find(C.begin(), C.end(), j) != C.end();
 				if(!C_contains_i != !C_contains_j)
 				{
 					//si ce n'est pas déjà dans l'ensemble
-					if(find(omega_C.begin(), omega_C.end(), arete) == omega_C.end())
-						omega_C.push_back(arete);
+					if(find(omega_C.begin(), omega_C.end(), this->coord[v]) == omega_C.end())
+						omega_C.push_back(this->coord[v]);
 
-					int poidsArete = this->E[i][j];
+					int poidsArete = round(sqrt((1 - i) * (1 - i) + (j - 1) * (j - 1)));
 					if(poidsArete < poidsPlusFaible)
 					{
-						e_etoile = arete; //on met dans e etoile l'arete au poids le plus petit
+						e_etoile = this->coord[v]; //on met dans e etoile l'arete au poids le plus petit
 						poidsPlusFaible = poidsArete;
 					}
 				}	
 			}
 		}
+		
 		
 		this->A[e_etoile.first][e_etoile.second] = true;
 
@@ -160,36 +193,47 @@ void graphe::arbrecouvrant()
 		omega_C.erase(find(omega_C.begin(), omega_C.end(), e_etoile));
 		
 		// Ajouter toutes les aretes partant du nouveau sommet dans C
-		for(int i = 0 ; i < this->n ; ++i)
-			if(this->E[C.back()][i] != 0)
-				omega_C.push_back(make_pair(C.back(), i));
+		if(this->type == 1)
+		{
+			for(int i = 0 ; i < this->n ; ++i)
+				if(this->E[C.back()][i] != 0)
+					omega_C.push_back(make_pair(C.back(), i));
+		}
+		else if(this->type == 2)
+		{
+			for(int v = 0 ; v < this->n ; ++v)
+			{
+				if(this->coord[v].first == C.back())
+					omega_C.push_back(this->coord[v]);
+			}
+		}
 
 		// retirer l'arete e etoile qui part du nouveau sommet dans C
 		omega_C.erase(find(omega_C.begin(), omega_C.end(), make_pair(e_etoile.second, e_etoile.first)));
 
 
 
-		// cout<<"\ndebug iteration "<<k<<endl;
+		cout<<"\ndebug iteration "<<k<<endl;
 
-		// cout<<"C = "<<endl;
-		// for(int i : C)
-		// 	cout<<i<<endl;
+		cout<<"C = "<<endl;
+		for(int i : C)
+			cout<<i<<endl;
 
-		// cout<<endl;
-		// cout<<"omega C ="<<endl;
-		// for(pair<int,int> p : omega_C)
-		// 	cout<<p.first<<";"<<p.second<<endl;
+		cout<<endl;
+		cout<<"omega C ="<<endl;
+		for(pair<int,int> p : omega_C)
+			cout<<p.first<<";"<<p.second<<endl;
 
-		// cout<<"e etoile = "<<endl;
-		// cout<<endl<<e_etoile.first<<";"<<e_etoile.second<<endl;
+		cout<<"e etoile = "<<endl;
+		cout<<endl<<e_etoile.first<<";"<<e_etoile.second<<endl;
 
-		// cout<<"A="<<endl;
-		// int v, w;
-		// for( v = 0 ; v < this->n ; ++v)
-		// {
-		// 	for(w = 0 ; w < this->n - 1 ; ++w)
-		// 		cout<<this->A[v][w]<<"\t";
-		// 	cout<<this->A[v][w]<<endl;
-		// }
+		cout<<"A="<<endl;
+		int v, w;
+		for( v = 0 ; v < this->n ; ++v)
+		{
+			for(w = 0 ; w < this->n - 1 ; ++w)
+				cout<<this->A[v][w]<<"\t";
+			cout<<this->A[v][w]<<endl;
+		}
 	}
 }
