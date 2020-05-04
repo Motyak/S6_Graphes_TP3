@@ -3,6 +3,7 @@
 #include <utility>
 
 #include <vector>
+#include <set>
 #include <algorithm>
 #include <cmath>
 
@@ -41,6 +42,18 @@ graphe::graphe(char* filename)
 		}
 	}	
 	file.close();
+
+	// if(this->type == 2)
+	// {
+	// 	// mettre le vrai n, c'est a dire le nombre de sommets
+	// 	set<int> s;
+	// 	for(int i = 0 ; i < this->n ; ++i)
+	// 	{
+	// 		s.insert(this->coord[i].first);
+	// 		s.insert(this->coord[i].second);
+	// 	}
+	// 	this->n = s.size();
+	// }
 }
 
 /****************************************************************/
@@ -80,17 +93,35 @@ void graphe::resultats()
     int S = 0;
     // !!! A FAIRE !!! //
 
-	for(int i = 0 ; i < this->n ; ++i)
+	if(this->type == 1)
 	{
-		for(int j = 0 ; j < this->n ; ++j)
+		for(int i = 0 ; i < this->n ; ++i)
 		{
-			if(this->A[i][j] == true)
+			for(int j = 0 ; j < this->n ; ++j)
 			{
-				cout<<i<<";"<<j<<endl;
-				S += this->E[i][j];
+				if(this->A[i][j] == true)
+				{
+					cout<<i<<";"<<j<<endl;
+					S += this->E[i][j];
+				}
 			}
 		}
 	}
+	else if(this->type == 2)
+	{
+		for(int i = 0 ; i < this->n ; ++i)
+		{
+			for(int j = 0 ; j < this->n ; ++j)
+			{
+				if(this->A[i][j] == true)
+				{
+					cout<<i<<";"<<j<<endl;
+					S += round(sqrt((1 - i) * (1 - i) + (j - 1) * (j - 1)));
+				}
+			}
+		}
+	}
+	
 	
 
 	cout << "Coût(T) = " << S << endl; // Ce message doit être affiché
@@ -111,9 +142,22 @@ void graphe::arbrecouvrant()
 	vector<int> C;	//on ajoute a la liste de sommets couverts le premier sommet
 	vector<pair<int,int>> omega_C;
 	pair<int,int> e_etoile;
+	int nbDeSommets = this->n;
 	/* les valeurs de A sont déjà init à false, donc A vide */
 
-	for(int k = 1 ; k < this->n ; ++k)
+	if(this->type == 2)
+	{
+		// mettre le vrai n, c'est a dire le nombre de sommets
+		set<int> s;
+		for(int i = 0 ; i < this->n ; ++i)
+		{
+			s.insert(this->coord[i].first);
+			s.insert(this->coord[i].second);
+		}
+		nbDeSommets = s.size();
+	}
+
+	for(int k = 1 ; k < nbDeSommets ; ++k)
 	{
 		// remplir omega_C et attribuer val a e etoile
 		if(this->type == 1)

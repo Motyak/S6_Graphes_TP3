@@ -12,7 +12,7 @@ int main(int argc,char** argv)
 		graphe obj(argv[1]);
 		obj.affichage();
 		obj.arbrecouvrant();
-		// obj.resultats();
+		obj.resultats();
 	}
 
 	return(1);
