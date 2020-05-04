@@ -35,3 +35,19 @@ et de* l'extrémité fin
 
 
 Empecher les doublons dans omega c, utiliser une structure de données qui empeche les doublons
+
+
+Dans un graphe euclidien on ne stocke pas les poids car on peut les calculer a partir
+    des coordonnées.
+Par ex, pour l'arete aux sommets A et B, le poids est :
+    (B_y - A_y) / (B_x - A_x)
+
+
+
+DANS SON FICHIER EUCLIDIEN DE FDP CA COMMENCE PAS A 0 LES SOMMETS MAIS A 1, QUEL ENCULE
+
+non seulement y'a 8 points pour 3 sommets, mais en plus les id de sommets n'ont pas 1 d'écart et ne
+commence pas à 0. YEEES
+
+Donc comme la boucle d'itération i j ne peut pas fonctionner sur ce type de graphe,
+alors on va refaire une autre boucle pour traiter le type 2.

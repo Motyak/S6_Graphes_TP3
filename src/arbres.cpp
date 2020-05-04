@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <cmath>
 
 using namespace std;
 
@@ -79,17 +80,31 @@ void graphe::resultats()
     int S = 0;
     // !!! A FAIRE !!! //
 
-	for(int i = 0 ; i < this->n ; ++i)
+	if(this->type == 1)
 	{
-		for(int j = 0 ; j < this->n ; ++j)
+		for(int i = 0 ; i < this->n ; ++i)
 		{
-			if(this->A[i][j] == true)
+			for(int j = 0 ; j < this->n ; ++j)
 			{
-				cout<<i<<";"<<j<<endl;
-				S += this->E[i][j];
+				if(this->A[i][j] == true)
+				{
+					cout<<i<<";"<<j<<endl;
+					S += this->E[i][j];
+				}
 			}
 		}
 	}
+	else if(this->type == 2)
+	{
+		for(int i = 0 ; i < this->n ; ++i)
+		{
+			pair<int,int> p = this->coord[i];
+			cout<<p.first<<";"<<p.second<<endl;
+			S += round(sqrt((1 - p.first) * (1 - p.first) 
+					+ (p.second - 1) * (p.second - 1)));
+		}
+	}
+	
 
 	cout << "Coût(T) = " << S << endl; // Ce message doit être affiché
 }
@@ -111,35 +126,40 @@ void graphe::arbrecouvrant()
 	pair<int,int> e_etoile;
 	/* les valeurs de A sont déjà init à false, donc A vide */
 
-	// C.push_back(0);	//on ajoute a la liste de sommets couverts le premier sommet
 	for(int k = 1 ; k < this->n ; ++k)
-	// for(int k = 1 ; k <= 2 ; ++k)
 	{
 		// remplir omega_C et attribuer val a e etoile
 		int j = 0;
-		int poidsArete = infini;
+		int poidsPlusFaible = infini;
 		for(int i = 0 ; i < this->n ; ++i)
 		{
 			for(j = i ; j < this->n ; ++j)
 			{
 				//arete = i,j
+				pair<int,int> arete = make_pair(i, j);
 
 				//si l'arete n'existe pas, on skip
-				if(this->E[i][j] == 0)
+				if(this->E[i][j] == 0 && find(begin(this->coord), begin(this->coord) + this->n, arete) == begin(this->coord) + this->n)
 					continue;
-				
+
 				//verifier si une des extremités est dans C et l'autre précisément pas
 				bool C_contains_i = find(C.begin(), C.end(), i) != C.end();
 				bool C_contains_j = find(C.begin(), C.end(), j) != C.end();
 				if(!C_contains_i != !C_contains_j)
 				{
 					//si ce n'est pas déjà dans l'ensemble
-					if(find(omega_C.begin(), omega_C.end(), make_pair(i,j)) == omega_C.end())
-						omega_C.push_back(make_pair(i,j));
-					if(this->E[i][j] < poidsArete)
-					{
-						e_etoile = make_pair(i, j); //on met dans e etoile l'arete au poids le plus petit
+					if(find(omega_C.begin(), omega_C.end(), arete) == omega_C.end())
+						omega_C.push_back(arete);
+
+					int poidsArete;
+					if(this->type == 1)
 						poidsArete = this->E[i][j];
+					else if(this->type == 2)
+						poidsArete = round(sqrt((1 - i) * (1 - i) + (j - 1) * (j - 1)));
+					if(poidsArete < poidsPlusFaible)
+					{
+						e_etoile = arete; //on met dans e etoile l'arete au poids le plus petit
+						poidsPlusFaible = poidsArete;
 					}
 				}	
 			}
@@ -157,9 +177,20 @@ void graphe::arbrecouvrant()
 		omega_C.erase(find(omega_C.begin(), omega_C.end(), e_etoile));
 		
 		// Ajouter toutes les aretes partant du nouveau sommet dans C
-		for(int i = 0 ; i < this->n ; ++i)
-			if(this->E[C.back()][i] != 0)
-				omega_C.push_back(make_pair(C.back(), i));
+		if(this->type == 1)
+		{
+			for(int i = 0 ; i < this->n ; ++i)
+				if(this->E[C.back()][i] != 0)
+					omega_C.push_back(make_pair(C.back(), i));
+		}
+		else if(this->type == 2)
+		{
+			for(int i = 0 ; i < this->n ; ++i)
+				if(this->coord[i].first == C.back())
+					omega_C.push_back(this->coord[i]);
+		}
+
+
 
 		// retirer l'arete e etoile qui part du nouveau sommet dans C
 		omega_C.erase(find(omega_C.begin(), omega_C.end(), make_pair(e_etoile.second, e_etoile.first)));
