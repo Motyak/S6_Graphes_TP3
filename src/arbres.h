@@ -24,5 +24,5 @@ public :
 	void arbrecouvrant();
 	void arbrecouvrant_grapheSimple();
 	void arbrecouvrant_grapheEuclidien();
-	int distanceDeuxPoints(pair<int,int> a, pair<int,int> b);
+	double distanceDeuxPoints(pair<int,int> a, pair<int,int> b);
 };

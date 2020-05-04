@@ -78,7 +78,8 @@ void graphe::affichage()
 /****************************************************************************/
 void graphe::resultats()
 {
-    int S = 0;
+    // int S = 0;
+	double S = 0;
     // !!! A FAIRE !!! //
 if(this->type == 1)
 {
@@ -95,7 +96,7 @@ else if(this->type == 2)
 				S += this->distanceDeuxPoints(this->coord[i], this->coord[j]);
 }
 
-	cout << "Coût(T) = " << S << endl; // Ce message doit être affiché
+	cout << "Coût(T) = " << round(S) << endl; // Ce message doit être affiché
 }
 
 void graphe::arbrecouvrant_grapheSimple()
@@ -186,13 +187,13 @@ void graphe::arbrecouvrant_grapheSimple()
 	}
 }
 
-int graphe::distanceDeuxPoints(pair<int,int> a, pair<int,int> b)
+double graphe::distanceDeuxPoints(pair<int,int> a, pair<int,int> b)
 {
 	int xa = a.first;
 	int xb = b.first;
 	int ya = a.second;
 	int yb = b.second;
-	return round(sqrt((xb - xa) * (xb - xa) + (yb - ya) * (yb - ya)));
+	return sqrt((xb - xa) * (xb - xa) + (yb - ya) * (yb - ya));
 }
 
 void graphe::arbrecouvrant_grapheEuclidien()
@@ -228,7 +229,7 @@ void graphe::arbrecouvrant_grapheEuclidien()
 					if(find(omega_C.begin(), omega_C.end(), arete) == omega_C.end())
 						omega_C.push_back(arete);
 
-					int poidsArete = this->distanceDeuxPoints(this->coord[i], this->coord[j]);
+					int poidsArete = round(this->distanceDeuxPoints(this->coord[i], this->coord[j]));
 					if(poidsArete < poidsPlusFaible)
 					{
 						e_etoile = arete; //on met dans e etoile l'arete au poids le plus petit

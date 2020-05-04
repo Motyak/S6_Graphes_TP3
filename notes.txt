@@ -59,3 +59,7 @@ Dans un graphe euclidient, un sommet c'est pas un nombre, c'est une coordonnée.
 Du coup y'a bien autant de sommet que de coordonnée.
 
 Dans le graphe euclien, comment parcourir les aretes ?
+
+
+
+Je rate mes tests euclidiens à 1 ou 2 près quand y'a un n grand, problème de rounding ??
