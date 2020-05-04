@@ -55,6 +55,7 @@ alors on va refaire une autre boucle pour traiter le type 2.
 Dans le fichier graphe euclidien on a les aretes, une arete i,j avec sommet i et j.
 
 
+Dans un graphe euclidient, un sommet c'est pas un nombre, c'est une coordonnée.
+Du coup y'a bien autant de sommet que de coordonnée.
 
-Quand on traite un graphe euclidien, k n'itere pas pour chaque point mais bien chaque sommet, 
-du coup il faut récup cette infos.
+Dans le graphe euclien, comment parcourir les aretes ?

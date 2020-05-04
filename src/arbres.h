@@ -22,4 +22,7 @@ public :
 	void affichage();
 	void resultats();
 	void arbrecouvrant();
+	void arbrecouvrant_grapheSimple();
+	void arbrecouvrant_grapheEuclidien();
+	int distanceDeuxPoints(pair<int,int> a, pair<int,int> b);
 };

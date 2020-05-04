@@ -42,18 +42,6 @@ graphe::graphe(char* filename)
 		}
 	}	
 	file.close();
-
-	// if(this->type == 2)
-	// {
-	// 	// mettre le vrai n, c'est a dire le nombre de sommets
-	// 	set<int> s;
-	// 	for(int i = 0 ; i < this->n ; ++i)
-	// 	{
-	// 		s.insert(this->coord[i].first);
-	// 		s.insert(this->coord[i].second);
-	// 	}
-	// 	this->n = s.size();
-	// }
 }
 
 /****************************************************************/
@@ -92,39 +80,221 @@ void graphe::resultats()
 {
     int S = 0;
     // !!! A FAIRE !!! //
-
-	if(this->type == 1)
-	{
-		for(int i = 0 ; i < this->n ; ++i)
-		{
-			for(int j = 0 ; j < this->n ; ++j)
-			{
-				if(this->A[i][j] == true)
-				{
-					cout<<i<<";"<<j<<endl;
+if(this->type == 1)
+{
+	for(int i = 0 ; i < this->n ; ++i)
+		for(int j = 0 ; j < this->n ; ++j)
+			if(this->A[i][j] == true)
 					S += this->E[i][j];
-				}
-			}
-		}
-	}
-	else if(this->type == 2)
-	{
-		for(int i = 0 ; i < this->n ; ++i)
-		{
-			for(int j = 0 ; j < this->n ; ++j)
-			{
-				if(this->A[i][j] == true)
-				{
-					cout<<i<<";"<<j<<endl;
-					S += round(sqrt((1 - i) * (1 - i) + (j - 1) * (j - 1)));
-				}
-			}
-		}
-	}
-	
-	
+}
+else if(this->type == 2)
+{
+	for(int i = 0 ; i < this->n ; ++i)
+		for(int j = 0 ; j < this->n ; ++j)
+			if(this->A[i][j] == true)
+				S += this->distanceDeuxPoints(this->coord[i], this->coord[j]);
+}
 
 	cout << "Coût(T) = " << S << endl; // Ce message doit être affiché
+}
+
+void graphe::arbrecouvrant_grapheSimple()
+{
+	//on ajoute a la liste de sommets couverts le premier sommet
+	vector<int> C { 0 };	
+	vector<pair<int,int>> omega_C;
+	pair<int,int> e_etoile;
+	/* les valeurs de A sont déjà init à false, donc A vide */
+
+	for(int k = 1 ; k < this->n ; ++k)
+	{
+		// remplir omega_C et attribuer val a e etoile	
+		int j = 0;
+		int poidsPlusFaible = infini;
+		for(int i = 0 ; i < this->n ; ++i)
+		{
+			for(j = i ; j < this->n ; ++j)
+			{
+				//arete = i,j
+				pair<int,int> arete = make_pair(i, j);
+
+				//si l'arete n'existe pas, on skip
+				if(this->E[i][j] == 0)
+					continue;
+
+				//verifier si une des extremités est dans C et l'autre précisément pas
+				bool C_contains_i = find(C.begin(), C.end(), i) != C.end();
+				bool C_contains_j = find(C.begin(), C.end(), j) != C.end();
+				if(!C_contains_i != !C_contains_j)
+				{
+					//si ce n'est pas déjà dans l'ensemble
+					if(find(omega_C.begin(), omega_C.end(), arete) == omega_C.end())
+						omega_C.push_back(arete);
+
+					int poidsArete = this->E[i][j];
+					if(poidsArete < poidsPlusFaible)
+					{
+						e_etoile = arete; //on met dans e etoile l'arete au poids le plus petit
+						poidsPlusFaible = poidsArete;
+					}
+				}	
+			}
+		}
+		
+		this->A[e_etoile.first][e_etoile.second] = true;
+
+		//si l'extremite i n'est pas comprise dans C..
+		if(find(C.begin(), C.end(), e_etoile.first) == C.end())
+			C.push_back(e_etoile.first);
+		else
+			C.push_back(e_etoile.second);
+
+		// Retirer e etoile de omega c
+		omega_C.erase(find(omega_C.begin(), omega_C.end(), e_etoile));
+		
+		// Ajouter toutes les aretes partant du nouveau sommet dans C
+		for(int i = 0 ; i < this->n ; ++i)
+			if(this->E[C.back()][i] != 0)
+				omega_C.push_back(make_pair(C.back(), i));
+
+		// retirer l'arete e etoile qui part du nouveau sommet dans C
+		omega_C.erase(find(omega_C.begin(), omega_C.end(), make_pair(e_etoile.second, e_etoile.first)));
+
+
+		// cout<<"\ndebug iteration "<<k<<endl;
+
+		// cout<<"C = "<<endl;
+		// for(int i : C)
+		// 	cout<<i<<endl;
+
+		// cout<<endl;
+		// cout<<"omega C ="<<endl;
+		// for(pair<int,int> p : omega_C)
+		// 	cout<<p.first<<";"<<p.second<<endl;
+
+		// cout<<"e etoile = "<<endl;
+		// cout<<endl<<e_etoile.first<<";"<<e_etoile.second<<endl;
+
+		// cout<<"A="<<endl;
+		// int v, w;
+		// for( v = 0 ; v < this->n ; ++v)
+		// {
+		// 	for(w = 0 ; w < this->n - 1 ; ++w)
+		// 		cout<<this->A[v][w]<<"\t";
+		// 	cout<<this->A[v][w]<<endl;
+		// }
+	}
+}
+
+int graphe::distanceDeuxPoints(pair<int,int> a, pair<int,int> b)
+{
+	int xa = a.first;
+	int xb = b.first;
+	int ya = a.second;
+	int yb = b.second;
+	return round(sqrt((xb - xa) * (xb - xa) + (yb - ya) * (yb - ya)));
+}
+
+void graphe::arbrecouvrant_grapheEuclidien()
+{
+	//on ajoute a la liste de sommets couverts le premier sommet
+	vector<pair<int,int>> C { this->coord[0] };	
+	vector<pair<pair<int,int>,pair<int,int>>> omega_C;
+	pair<pair<int,int>,pair<int,int>> e_etoile;
+	/* les valeurs de A sont déjà init à false, donc A vide */
+
+	for(int k = 1 ; k < this->n ; ++k)
+	// for(int k = 1 ; k <= 2 ; ++k)
+	{
+		int poidsPlusFaible = infini;
+		//je parcours toutes les aretes
+		for(int i = 0 ; i < this->n ; ++i)
+		{
+			for(int j = 0 ; j < this->n ; ++j)
+			{
+				// remplir omega_C et attribuer val a e etoile	
+				pair<pair<int,int>,pair<int,int>> arete = make_pair(this->coord[i], this->coord[j]);
+
+				//si l'arete n'existe pas, on skip
+				if(this->coord[i] == this->coord[j])
+					continue;
+
+				//verifier si une des extremités est dans C et l'autre précisément pas
+				bool C_contains_i = find(C.begin(), C.end(), this->coord[i]) != C.end();
+				bool C_contains_j = find(C.begin(), C.end(), this->coord[j]) != C.end();
+				if(!C_contains_i != !C_contains_j)
+				{
+					//si ce n'est pas déjà dans l'ensemble
+					if(find(omega_C.begin(), omega_C.end(), arete) == omega_C.end())
+						omega_C.push_back(arete);
+
+					int poidsArete = this->distanceDeuxPoints(this->coord[i], this->coord[j]);
+					if(poidsArete < poidsPlusFaible)
+					{
+						e_etoile = arete; //on met dans e etoile l'arete au poids le plus petit
+						poidsPlusFaible = poidsArete;
+					}
+				}	
+			}
+		}
+		int indexSommetA = distance(begin(this->coord), 
+				find(begin(this->coord), end(this->coord), e_etoile.first));
+		int indexSommetB = distance(begin(this->coord), 
+				find(begin(this->coord), end(this->coord), e_etoile.second));
+		this->A[indexSommetA][indexSommetB] = true;
+
+		//debug
+		// cout<<"e etoile ="<<e_etoile.first.first<<";"<<e_etoile.first.second
+		// 		<<"->"<<e_etoile.second.first<<";"<<e_etoile.second.second<<endl;
+
+		//si l'extremite i n'est pas comprise dans C..
+		if(find(C.begin(), C.end(), e_etoile.first) == C.end())
+			C.push_back(e_etoile.first);
+		else
+			C.push_back(e_etoile.second);
+
+		// Retirer e etoile de omega c
+		omega_C.erase(find(omega_C.begin(), omega_C.end(), e_etoile));
+		
+		// Ajouter toutes les aretes partant du nouveau sommet dans C
+		for(int i = 0 ; i < this->n ; ++i)
+			for(int j = 0 ; j < this->n ; ++j)
+				if(this->coord[i] != this->coord[j] && this->coord[i] == C.back())
+					omega_C.push_back(make_pair(this->coord[i], this->coord[j]));
+			
+
+		// retirer l'arete e etoile qui part du nouveau sommet dans C
+		omega_C.erase(find(omega_C.begin(), omega_C.end(), make_pair(e_etoile.second, e_etoile.first)));
+
+
+
+
+
+		// cout<<"\ndebug iteration "<<k<<endl;
+
+		// cout<<"C = "<<endl;
+		// for(pair<int,int> sommet : C)
+		// 	cout<<sommet.first<<";"<<sommet.second<<endl;
+
+		// cout<<endl;
+		// cout<<"omega C ="<<endl;
+		// for(pair<pair<int,int>,pair<int,int>> arete : omega_C)
+		// 	cout<<arete.first.first<<";"<<arete.first.second<<"->"
+		// 			<<arete.second.first<<";"<<arete.second.second<<endl;
+
+		// cout<<"e etoile = "<<endl;
+		// cout<<e_etoile.first.first<<";"<<e_etoile.first.second<<"->"
+		// 			<<e_etoile.second.first<<";"<<e_etoile.second.second<<endl;
+
+		// cout<<"A="<<endl;
+		// int v, w;
+		// for( v = 0 ; v < this->n ; ++v)
+		// {
+		// 	for(w = 0 ; w < this->n - 1 ; ++w)
+		// 		cout<<this->A[v][w]<<"\t";
+		// 	cout<<this->A[v][w]<<endl;
+		// }
+	}
 }
 
 
@@ -139,145 +309,9 @@ void graphe::resultats()
 void graphe::arbrecouvrant()
 {
 	   // !!! A FAIRE !!! //
-	vector<int> C;	//on ajoute a la liste de sommets couverts le premier sommet
-	vector<pair<int,int>> omega_C;
-	pair<int,int> e_etoile;
-	int nbDeSommets = this->n;
-	/* les valeurs de A sont déjà init à false, donc A vide */
-
-	if(this->type == 2)
-	{
-		// mettre le vrai n, c'est a dire le nombre de sommets
-		set<int> s;
-		for(int i = 0 ; i < this->n ; ++i)
-		{
-			s.insert(this->coord[i].first);
-			s.insert(this->coord[i].second);
-		}
-		nbDeSommets = s.size();
-	}
-
-	for(int k = 1 ; k < nbDeSommets ; ++k)
-	{
-		// remplir omega_C et attribuer val a e etoile
-		if(this->type == 1)
-		{
-			C.push_back(0);	//premier sommet
-			int j = 0;
-			int poidsPlusFaible = infini;
-			for(int i = 0 ; i < this->n ; ++i)
-			{
-				for(j = i ; j < this->n ; ++j)
-				{
-					//arete = i,j
-					pair<int,int> arete = make_pair(i, j);
-
-					//si l'arete n'existe pas, on skip
-					if(this->E[i][j] == 0)
-						continue;
-
-					//verifier si une des extremités est dans C et l'autre précisément pas
-					bool C_contains_i = find(C.begin(), C.end(), i) != C.end();
-					bool C_contains_j = find(C.begin(), C.end(), j) != C.end();
-					if(!C_contains_i != !C_contains_j)
-					{
-						//si ce n'est pas déjà dans l'ensemble
-						if(find(omega_C.begin(), omega_C.end(), arete) == omega_C.end())
-							omega_C.push_back(arete);
-
-						int poidsArete = this->E[i][j];
-						if(poidsArete < poidsPlusFaible)
-						{
-							e_etoile = arete; //on met dans e etoile l'arete au poids le plus petit
-							poidsPlusFaible = poidsArete;
-						}
-					}	
-				}
-			}
-		}
-		else if(type == 2)
-		{
-			C.push_back(1);	//premier sommet
-			int poidsPlusFaible = infini;
-
-			//je parcours toutes les aretes
-			for(int v = 0 ; v < this->n ; ++v)
-			{
-				//verifier si une des extremités est dans C et l'autre précisément pas
-				int i = this->coord[v].first;
-				int j = this->coord[v].second;
-				bool C_contains_i = find(C.begin(), C.end(), i) != C.end();
-				bool C_contains_j = find(C.begin(), C.end(), j) != C.end();
-				if(!C_contains_i != !C_contains_j)
-				{
-					//si ce n'est pas déjà dans l'ensemble
-					if(find(omega_C.begin(), omega_C.end(), this->coord[v]) == omega_C.end())
-						omega_C.push_back(this->coord[v]);
-
-					int poidsArete = round(sqrt((1 - i) * (1 - i) + (j - 1) * (j - 1)));
-					if(poidsArete < poidsPlusFaible)
-					{
-						e_etoile = this->coord[v]; //on met dans e etoile l'arete au poids le plus petit
-						poidsPlusFaible = poidsArete;
-					}
-				}	
-			}
-		}
-		
-		
-		this->A[e_etoile.first][e_etoile.second] = true;
-
-		//si l'extremite i n'est pas comprise dans C..
-		if(find(C.begin(), C.end(), e_etoile.first) == C.end())
-			C.push_back(e_etoile.first);
-		else
-			C.push_back(e_etoile.second);
-
-		// Retirer e etoile de omega c
-		omega_C.erase(find(omega_C.begin(), omega_C.end(), e_etoile));
-		
-		// Ajouter toutes les aretes partant du nouveau sommet dans C
-		if(this->type == 1)
-		{
-			for(int i = 0 ; i < this->n ; ++i)
-				if(this->E[C.back()][i] != 0)
-					omega_C.push_back(make_pair(C.back(), i));
-		}
-		else if(this->type == 2)
-		{
-			for(int v = 0 ; v < this->n ; ++v)
-			{
-				if(this->coord[v].first == C.back())
-					omega_C.push_back(this->coord[v]);
-			}
-		}
-
-		// retirer l'arete e etoile qui part du nouveau sommet dans C
-		omega_C.erase(find(omega_C.begin(), omega_C.end(), make_pair(e_etoile.second, e_etoile.first)));
-
-
-
-		cout<<"\ndebug iteration "<<k<<endl;
-
-		cout<<"C = "<<endl;
-		for(int i : C)
-			cout<<i<<endl;
-
-		cout<<endl;
-		cout<<"omega C ="<<endl;
-		for(pair<int,int> p : omega_C)
-			cout<<p.first<<";"<<p.second<<endl;
-
-		cout<<"e etoile = "<<endl;
-		cout<<endl<<e_etoile.first<<";"<<e_etoile.second<<endl;
-
-		cout<<"A="<<endl;
-		int v, w;
-		for( v = 0 ; v < this->n ; ++v)
-		{
-			for(w = 0 ; w < this->n - 1 ; ++w)
-				cout<<this->A[v][w]<<"\t";
-			cout<<this->A[v][w]<<endl;
-		}
-	}
+	
+	if(this->type == 1)
+		this->arbrecouvrant_grapheSimple();
+	else if(this->type == 2)
+		this->arbrecouvrant_grapheEuclidien();
 }
