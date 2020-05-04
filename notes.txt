@@ -63,3 +63,7 @@ Dans le graphe euclien, comment parcourir les aretes ?
 
 
 Je rate mes tests euclidiens à 1 ou 2 près quand y'a un n grand, problème de rounding ??
+(a priori fixed)
+
+Je rate mes tests simplescar je pense que l'arbre est faux, je trouve toujours beaucoup plus quand
+le n est grand

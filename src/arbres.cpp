@@ -129,7 +129,9 @@ void graphe::arbrecouvrant_grapheSimple()
 				if(!C_contains_i != !C_contains_j)
 				{
 					//si ce n'est pas déjà dans l'ensemble
-					if(find(omega_C.begin(), omega_C.end(), arete) == omega_C.end())
+					// if(find(omega_C.begin(), omega_C.end(), arete) == omega_C.end())
+					if(find(omega_C.begin(), omega_C.end(), arete) == omega_C.end() && 
+							find(omega_C.begin(), omega_C.end(), make_pair(arete.second, arete.first)) == omega_C.end())
 						omega_C.push_back(arete);
 
 					int poidsArete = this->E[i][j];
@@ -148,6 +150,7 @@ void graphe::arbrecouvrant_grapheSimple()
 		if(find(C.begin(), C.end(), e_etoile.first) == C.end())
 			C.push_back(e_etoile.first);
 		else
+		// else if(find(C.begin(), C.end(), e_etoile.second) == C.end())
 			C.push_back(e_etoile.second);
 
 		// Retirer e etoile de omega c
