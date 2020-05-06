@@ -67,3 +67,9 @@ Je rate mes tests euclidiens à 1 ou 2 près quand y'a un n grand, problème de 
 
 Je rate mes tests simplescar je pense que l'arbre est faux, je trouve toujours beaucoup plus quand
 le n est grand
+
+
+
+Peut etre que ce qui ne va pas avec mon code c'est que e etoile peut etre composé
+de 2 sommets déjà présents dans C, du coup ca prend la deuxième extrémité dans C..
+??

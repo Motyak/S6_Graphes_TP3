@@ -3,7 +3,6 @@
 #include <utility>
 
 #include <vector>
-#include <set>
 #include <algorithm>
 #include <cmath>
 
@@ -119,9 +118,9 @@ void graphe::arbrecouvrant_grapheSimple()
 				//arete = i,j
 				pair<int,int> arete = make_pair(i, j);
 
-				//si l'arete n'existe pas, on skip
-				if(this->E[i][j] == 0)
-					continue;
+				// // si l'arete n'existe pas, on skip
+				// if(this->E[i][j] == 0)
+				// 	continue;
 
 				//verifier si une des extremités est dans C et l'autre précisément pas
 				bool C_contains_i = find(C.begin(), C.end(), i) != C.end();
