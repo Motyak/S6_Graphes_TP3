@@ -209,7 +209,7 @@ void graphe::arbrecouvrant_grapheEuclidien()
 	for(int k = 1 ; k < this->n ; ++k)
 	// for(int k = 1 ; k <= 2 ; ++k)
 	{
-		int poidsPlusFaible = infini;
+		double poidsPlusFaible = infini;
 		//je parcours toutes les aretes
 		for(int i = 0 ; i < this->n ; ++i)
 		{
@@ -231,7 +231,7 @@ void graphe::arbrecouvrant_grapheEuclidien()
 					if(find(omega_C.begin(), omega_C.end(), arete) == omega_C.end())
 						omega_C.push_back(arete);
 
-					int poidsArete = round(this->distanceDeuxPoints(this->coord[i], this->coord[j]));
+					double poidsArete = this->distanceDeuxPoints(this->coord[i], this->coord[j]);
 					if(poidsArete < poidsPlusFaible)
 					{
 						e_etoile = arete; //on met dans e etoile l'arete au poids le plus petit
